@@ -12,74 +12,38 @@ class Director:
     def __init__(self):
         self.pub = rospy.Publisher('/lane_controller_node/car_cmd',Twist2DStamped,queue_size=10)
         rospy.Subscriber('/fsm_node/mode', FSMState, self.mode_trigger)
-        #self.count = 0
-        #self.loop = 0
-    
-        self.start_flag = "NORMAL_JOYSTICK_CONTROL"
+
         self.running = FALSE
         
         
-     #rethink this section    
     def mode_trigger(self,msg):
-        
-       if self.running == FALSE:
-          
-          if msg.state == "LANE_FOLLOWING":
+                  
+        if msg.state == "LANE_FOLLOWING" and self.running == FALSE:
+            self.running = TRUE
+            # start driving
              
-             self.start_flag = "LANE_FOLLOWING"
-             self.running = TRUE
-             # start driving
-             
-          else:
-             start.running = FALSE
-             self.start_flag = msg.state
-       else:
-          # do nothing
+        else if msg.state == "LANE_FOLLOWING" and self.running == TRUE:
+            break;
+            
+        else if msg.state == "NORMAL_JOYSTICK_CONTROL":
+            self.running = FALSE
           
        
-    def start_driving(self, msg):
-       
-       #if mode = self derving -> start driving
-       #check for debounce
-       
-       if self.start_flag == FALSE:
-          self.start_flag == TRUE
-          #move
+    def drive_straight(self, msg):
+        if self.running == TRUE:
+            cmd = Twist2DStamped()
+            cmd.v = 2
+            cmd.omega = 0
           
-          cmd = Twist2DStamped()
-          cmd.v = 2
-          cmd.omega = 0
-          
-          rospy.pub.publish(cmd)
-    
-    """    
-        if self.count < 20:
-            cmd.linear.x = 1
-            cmd.angular.z=0
-            self.pub.publish(cmd)
+            rospy.pub.publish(cmd)
+    def turn(self, msg):
+        if self.running == TRUE:
+            cmd = Twist2DStamped()
+            cmd.v = 0
+            cmd.omega = 5
             
-        elif self.count < 30:
-            cmd.linear.x = 0 
-            cmd.angular.z = 1.5
-            self.pub.publish(cmd)
-        else:
-            self.count = 0
-            self.loop += 1
-            cmd.angular.z = 0
-            self.pub.publish(cmd)
+            rospy.publish(cmd)
             
-        if self.loop > 4:
-            rospy.spin()
-            
-            
-        """
-      def turn(self):
-      
-      
-      
-            
-        
-
 if __name__=='__main__':
     try:
         rospy.init_node('director',anonymous=True)
@@ -91,15 +55,8 @@ if __name__=='__main__':
                d.drive_straight()
                rate.sleep()
                d.turn()
+               rate.sleep()
+               
     except rospy.ROSInterruptException:
         pass
-    
-    
-    vehiclePose
-    
-    """
-    
-    need to listen to duckMachine/car_cmd_switch_node
-    
-    
-    """
+
