@@ -10,8 +10,8 @@ from duckietown_msgs.msg import FSMState
 class Director:
 
     def __init__(self):
-        self.pub = rospy.Publisher('/lane_controller_node/car_cmd',Twist2DStamped,queue_size=10)
-        rospy.Subscriber('/fsm_node/mode', FSMState, self.mode_trigger)
+        self.pub = rospy.Publisher('lane_controller_node/car_cmd',Twist2DStamped,queue_size=10)
+        rospy.Subscriber('fsm_node/mode', FSMState, self.mode_trigger)
 
         self.running = False
         
@@ -21,7 +21,7 @@ class Director:
         if msg.state == "LANE_FOLLOWING" and self.running == False:
             self.running = True
             # start driving
-             
+            
         elif msg.state == "LANE_FOLLOWING" and self.running == True:
             pass
             
@@ -35,27 +35,33 @@ class Director:
             cmd.v = 2
             cmd.omega = 0
           
-            rospy.pub.publish(cmd)
+            self.pub.publish(cmd)
+            self.pub.publish(cmd)
+    
     def turn(self):
         if self.running == True:
             cmd = Twist2DStamped()
             cmd.v = 0
             cmd.omega = 5
             
-            rospy.publish(cmd)
+            self.pub.publish(cmd)
+            self.pub.publish(cmd)
             
 if __name__=='__main__':
     try:
         rospy.init_node('director',anonymous=True)
         d = Director()
-        rate = rospy.Rate(10)
+        rate = rospy.Rate(100)
+        
+       
         while not rospy.is_shutdown():
-            for i in range(3):
+            
+            #for i in range(3):
                
-               d.drive_straight()
-               rate.sleep()
-               d.turn()
-               rate.sleep()
+            d.drive_straight()
+            rate.sleep()
+            d.turn()
+            rate.sleep()
                
     except rospy.ROSInterruptException:
         pass
