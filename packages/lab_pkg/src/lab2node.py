@@ -32,8 +32,8 @@ class Director:
     def drive_straight(self):
         if self.running == True:
             cmd = Twist2DStamped()
-            cmd.v = 2
-            cmd.omega = 0
+            cmd.v = .3
+            cmd.omega = .25
           
             self.pub.publish(cmd)
             self.pub.publish(cmd)
@@ -42,7 +42,7 @@ class Director:
         if self.running == True:
             cmd = Twist2DStamped()
             cmd.v = 0
-            cmd.omega = 5
+            cmd.omega = .75
             
             self.pub.publish(cmd)
             self.pub.publish(cmd)
@@ -51,18 +51,18 @@ if __name__=='__main__':
     try:
         rospy.init_node('director',anonymous=True)
         d = Director()
-        rate = rospy.Rate(100)
+        rate = rospy.Rate(1)
         
        
         while not rospy.is_shutdown():
-            
-            #for i in range(3):
-               
             d.drive_straight()
+            rate.sleep()
+            rate.sleep()
             rate.sleep()
             d.turn()
             rate.sleep()
-               
+            rate.sleep()
+    
     except rospy.ROSInterruptException:
         pass
 
