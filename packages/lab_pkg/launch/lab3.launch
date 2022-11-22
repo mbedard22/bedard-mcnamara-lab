@@ -1,6 +1,6 @@
 <launch>
- <node_pkg="rqt_image_view" type="rqt_image_view", name="image_lines_white", args="/image_lines_white"/>
- <node_pkg="rqt_image_view" type="rqt_image_view", name="image_lines_yellow", args="/image_lines_yellow"/>
+ <node pkg="rqt_image_view" type="rqt_image_view" name="image_lines_white" args="/image_lines_white"/>
+ <node pkg="rqt_image_view" type="rqt_image_view" name="image_lines_yellow" args="/image_lines_yellow"/>
     
  <group ns="$(env VEHICLE_NAME)">
  
