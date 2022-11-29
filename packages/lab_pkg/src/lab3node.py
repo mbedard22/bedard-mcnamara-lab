@@ -4,6 +4,7 @@ import rospy
 import cv2
 import numpy as np
 from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge
 
 class edge_finder:
@@ -57,3 +58,12 @@ class edge_finder:
                 cv2.circle(output, (l[0],l[1]), 2, (0,255,0))
                 cv2.circle(output, (l[2],l[3]), 2, (0,0,255))
         return output
+        
+if __name__=='__main__':
+    try:
+        rospy.init_node('edge_finder',anonymous=True)
+        ef = edge_finder()
+        rospy.spin()
+    
+    except rospy.ROSInterruptException:
+        pass
