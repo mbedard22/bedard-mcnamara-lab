@@ -10,30 +10,30 @@ from cv_bridge import CvBridge
 class edge_finder:
     def __init__(self):
         rospy.Subscriber("camera_node/image/compressed", CompressedImage, self.lanefilter_cb, queue_size=1, buff_size=2**24)
-            
+
         self.pub_white = rospy.Publisher("/image_lines_white", Image, queue_size = 10)
         self.pub_yellow = rospy.Publisher("/image_lines_yellow", Image, queue_size = 10)
         self.bridge = CvBridge()
 
     def lanefilter_cb(self, msg):
-        cv_img = self.bridge.compressed_imgmsg_to_cv2(msg, "bgr8") 
+        cv_img = self.bridge.compressed_imgmsg_to_cv2(msg, "bgr8")
         image_size = (160, 120)
         offset = 40
-        new_image = cv2.resize(cv_image, image_size, interpolation=cv2.INTER_NEAREST)
+        new_image = cv2.resize(cv_img, image_size, interpolation=cv2.INTER_NEAREST)
         cv_cropped = new_image[offset:, :]
-     
+
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
         kernel2 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7,7))
         image_hsv = cv2.cvtColor(cv_cropped, cv2.COLOR_BGR2HSV)
-        
+
         image_white = cv2.inRange(image_hsv,(30,0,155),(255,100,255))
         white_erode = cv2.erode(image_white, kernel)
         white_dilate = cv2.dilate(image_white, kernel2)
 
-        image_yellow = cv2.inRange(image_hsv,(25,100,100),(50,255,255))
+        image_yellow = cv2.inRange(image_hsv,(20,75,75),(30,255,255))
         yellow_erode = cv2.erode(image_yellow, kernel)
         yellow_dilate = cv2.dilate(image_yellow, kernel2)
-        
+
 #begin hw8
         edges = cv2.Canny(cv_cropped, 0, 500)
 
@@ -48,7 +48,7 @@ class edge_finder:
         output_white = self.output_lines(cv_cropped, white_lines)
         output_white = self.bridge.cv2_to_imgmsg(output_white, "bgr8")
         self.pub_white.publish(output_white)
-    
+
     def output_lines(self, original_image, lines):
         output = np.copy(original_image)
         if lines is not None:
@@ -58,12 +58,13 @@ class edge_finder:
                 cv2.circle(output, (l[0],l[1]), 2, (0,255,0))
                 cv2.circle(output, (l[2],l[3]), 2, (0,0,255))
         return output
-        
+
 if __name__=='__main__':
     try:
         rospy.init_node('edge_finder',anonymous=True)
         ef = edge_finder()
         rospy.spin()
-    
+
     except rospy.ROSInterruptException:
         pass
+
