@@ -38,14 +38,14 @@ class edge_finder:
         edges = cv2.Canny(cv_cropped, 0, 500)
 
         yellow_edges = cv2.bitwise_and(edges, image_yellow)
-        yellow_lines = cv2.HoughLinesP(yellow_edges, rho = 1, theta = (np.pi/180), threshold = 40, minLineLength = 1, maxLineGap = 8)
-        output_yellow = self.output_lines(self.original_image, yellow_lines)
+        yellow_lines = cv2.HoughLinesP(yellow_edges, rho = 1, theta = (np.pi/180), threshold = 10, minLineLength = 1, maxLineGap = 8)
+        output_yellow = self.output_lines(cv_cropped, yellow_lines)
         output_yellow = self.bridge.cv2_to_imgmsg(output_yellow, "bgr8")
         self.pub_yellow.publish(output_yellow)
 
         white_edges = cv2.bitwise_and(edges, image_white)
-        white_lines = cv2.HoughLinesP(white_edges, rho = 1, theta = (np.pi/180), threshold = 40, minLineLength = 1, maxLineGap = 8)
-        output_white = self.output_lines(self.original_image, white_lines)
+        white_lines = cv2.HoughLinesP(white_edges, rho = 1, theta = (np.pi/180), threshold = 10, minLineLength = 1, maxLineGap = 8)
+        output_white = self.output_lines(cv_cropped, white_lines)
         output_white = self.bridge.cv2_to_imgmsg(output_white, "bgr8")
         self.pub_white.publish(output_white)
     
